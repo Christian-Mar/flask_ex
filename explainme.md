@@ -104,10 +104,33 @@ De app staat in `src/blog/app.py`. De app wordt gemaakt door de functie `create_
 
 | Route | Template | Uitleg |
 |---|---|---|
-| `/` | `index.html` | Homepagina met een overzicht van artikelen. |
-| `/post/<int:post_id>` | `post.html` | Eén artikel. `post_id` wordt nog nergens voor gebruikt. |
+| `/` | `index.html` | Homepagina met alle posts. De eerste post is de uitgelichte kaart, de rest staat in het raster eronder. |
+| `/post/<int:post_id>` | `post.html` | Eén artikel. Bestaat het id niet, dan geeft de route een 404. |
 
-De pagina's tonen nog de dummytekst van de Start Bootstrap-templates.
+### Posts (`posts.json`)
+
+De posts staan in `src/blog/posts.json`. Dit is een gewoon bestand in het project en dus **niet** de MongoDB-database. De MongoDB-container draait wel, maar de app gebruikt hem nog niet.
+
+Elke post is een object met deze velden:
+
+| Veld | Uitleg |
+|---|---|
+| `id` | Nummer van de post, gebruikt in de URL (`/post/1`). |
+| `title` | Titel. |
+| `date` | Datum, als tekst (`2026-10-12`). |
+| `author` | Auteur. |
+| `categories` | Lijst met categorieën. |
+| `summary` | Korte samenvatting voor de homepagina. |
+| `content` | Lijst met alinea's. Elke alinea wordt op de artikelpagina een eigen `<p>`. |
+
+Zo worden de posts gebruikt in `app.py`:
+
+- `load_posts()` leest het bestand bij elk verzoek opnieuw in. Een wijziging in het JSON-bestand is dus meteen zichtbaar, zonder de server te herstarten. Dit is de plek die je later vervangt door een MongoDB-query.
+- De route `/` geeft alle posts door aan `index.html`. De route `/post/<id>` zoekt de post met dat `id` en geeft een 404 als die er niet is.
+- Een `context_processor` zet de lijst `categories` (alle unieke categorieën, alfabetisch) in elke template. De zijbalk gebruikt die lijst.
+- De tekst uit het JSON-bestand wordt in de templates met `{{ ... }}` getoond. Jinja maakt daarbij speciale tekens onschadelijk (autoescape). Een tekst als `{% extends %}` in een alinea wordt dus alleen getoond en niet uitgevoerd.
+
+Nog niet aangesloten: de categorielinks en de zoekbalk doen niets, de afbeeldingen zijn dummyplaatjes en de paginering is teruggebracht tot één pagina.
 
 ### Mappenstructuur
 
