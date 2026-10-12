@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 
 def create_app():
@@ -6,6 +6,10 @@ def create_app():
 
     @app.route("/")
     def index():
-        return "hello world"
+        return render_template("index.html")
+
+    @app.route("/post/<int:post_id>")
+    def post(post_id):
+        return render_template("post.html")
 
     return app
