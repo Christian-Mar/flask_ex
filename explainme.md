@@ -154,6 +154,42 @@ src/blog/
 - Verwijzingen naar statische bestanden gaan via `url_for('static', filename='css/styles.css')` en niet via een relatief pad als `css/styles.css`. Links tussen pagina's gaan via `url_for('index')` en `url_for('post', post_id=1)`.
 - De twee originele templates hadden elk een eigen `styles.css`, `scripts.js` en `favicon.ico`. Die verschilden alleen in de commentaarregel bovenin, dus er is één exemplaar bewaard.
 
+### Includes in Jinja2
+
+Flask gebruikt de sjabloontaal **Jinja2** voor de bestanden in `templates/`. Met `{% include %}` voeg je een ander sjabloon in op de plek waar de tag staat.
+
+```jinja
+{% include "_sidebar.html" %}
+```
+
+**Betekenis:** Jinja rendert `_sidebar.html` en plaatst het resultaat op die plek in de pagina. Zo hoef je een stuk HTML dat op meerdere pagina's voorkomt maar één keer te schrijven. In dit project staat de zijbalk (zoeken, categorieën, extra widget) in `_sidebar.html` en wordt hij zowel in `index.html` als in `post.html` ingevoegd. Een wijziging in de zijbalk hoef je dus maar op één plek te maken.
+
+**Context:** het ingevoegde sjabloon heeft standaard toegang tot dezelfde variabelen als de pagina die het invoegt. Daarom kan `_sidebar.html` de lijst `categories` gebruiken, die de `context_processor` in `app.py` voor elke template klaarzet. Ook variabelen uit een lus (`{% for %}`) en uit `{% set %}` zijn zichtbaar.
+
+**Opties:**
+
+| Schrijfwijze | Betekenis |
+|---|---|
+| `{% include "x.html" %}` | Voegt het bestand in. Bestaat het niet, dan volgt een foutmelding (`TemplateNotFound`). |
+| `{% include "x.html" ignore missing %}` | Slaat het stilletjes over als het bestand niet bestaat. |
+| `{% include ["a.html", "b.html"] %}` | Probeert de bestanden in volgorde en gebruikt het eerste dat bestaat. |
+| `{% include "x.html" without context %}` | Het ingevoegde sjabloon ziet de variabelen van de pagina niet. |
+
+De opties zijn te combineren, bijvoorbeeld `{% include "x.html" ignore missing without context %}`.
+
+**Verschil met `extends`:**
+
+| | `{% extends "base.html" %}` | `{% include "_sidebar.html" %}` |
+|---|---|---|
+| Richting | De pagina erft van een basis en vult blokken in. | De pagina voegt een los stuk in. |
+| Gebruik | Eén keer per pagina, bovenaan. | Zo vaak je wilt, op elke plek. |
+| Blokken | De pagina overschrijft `{% block %}`-gedeelten van de basis. | Het ingevoegde bestand is op zichzelf staand. De pagina kan er geen blokken in overschrijven. |
+| In dit project | `base.html`: navigatie, kop en voettekst. | `_sidebar.html`: de zijbalk. |
+
+Kort gezegd: `extends` is voor het **raamwerk** van de pagina en `include` voor een **herbruikbaar onderdeel** binnen de pagina.
+
+**Naamgeving:** de underscore in `_sidebar.html` is een afspraak, geen Jinja-regel. Het geeft aan dat het bestand een onderdeel is en geen pagina die je via een route toont.
+
 ### Starten
 
 ```
