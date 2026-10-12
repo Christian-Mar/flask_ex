@@ -1,0 +1,43 @@
+[
+  {
+    "id": 1,
+    "title": "MongoDB draaien in Docker",
+    "date": "2026-10-12",
+    "author": "Christian",
+    "categories": ["Docker", "MongoDB"],
+    "summary": "Met twee commando's heb je lokaal een MongoDB-database draaien, zonder iets op je computer te installeren.",
+    "content": [
+      "Docker is de snelste manier om lokaal met MongoDB te werken. Je installeert niets op je computer en je ruimt alles weer net zo makkelijk op.",
+      "Eerst haal je de officiële image op met 'docker pull mongo:latest'. Daarna start je de container met 'docker run -d --name mongodb -p 27017:27017 -v mongo_data:/data/db mongo:latest'.",
+      "Met -p 27017:27017 koppel je poort 27017 van de container aan poort 27017 van je computer. Het formaat is steeds host:container. Met -v mongo_data:/data/db bewaar je de data in een volume, zodat die niet verdwijnt als je de container verwijdert.",
+      "Daarna kun je verbinden via mongodb://localhost:27017. Let op: deze opzet heeft geen authenticatie en is alleen bedoeld voor lokale ontwikkeling."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Waarom je geen Dockerfile nodig hebt",
+    "date": "2026-10-12",
+    "author": "Christian",
+    "categories": ["Docker"],
+    "summary": "Een Dockerfile bouwt een image. Als je een kant-en-klare image gebruikt, heb je er geen nodig.",
+    "content": [
+      "Een Dockerfile gebruik je om zelf een image te bouwen. Bij MongoDB gebruiken we een kant-en-klare image van Docker Hub, dus er valt niets te bouwen.",
+      "Wil je toch zien wat er in zit? Met 'docker image inspect mongo:latest' bekijk je de details van de image, met 'docker history mongo:latest' de opbouw per laag en met 'docker inspect mongodb' de instellingen van de draaiende container.",
+      "Wil je het lange docker run-commando niet steeds onthouden? Leg de instellingen dan vast in een docker-compose.yml en start alles met 'docker compose up -d'. Een Dockerfile heb je pas nodig als je je eigen Flask-app in een container wilt draaien."
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Een Flask-blog opzetten met templates",
+    "date": "2026-10-12",
+    "author": "Christian",
+    "categories": ["Flask", "Python"],
+    "summary": "Van een eerste 'hello world' naar een blog met een basistemplate, statische bestanden en meerdere pagina's.",
+    "content": [
+      "De blog begon met een Flask-app die alleen 'hello world' teruggaf. De app staat in src/blog/app.py en wordt gemaakt door de functie create_app(). Starten doe je met 'uv run flask --app src/blog/app run --port 5001'.",
+      "Gebruik poort 5001 en niet de standaardpoort 5000. Op macOS is poort 5000 bezet door AirPlay en krijg je een 403. Let ook op de schrijfwijze: --app moet aan elkaar, want met een spatie (-- app) leest Flask het als 'einde van de opties'.",
+      "Flask zoekt HTML-sjablonen in een map templates (met een s) en statische bestanden in een map static. Een gedeelde base.html bevat de navigatie en voettekst. De pagina's index.html en post.html breiden die uit met {% extends %} en vullen alleen de blokken in.",
+      "Verwijzingen naar CSS, JavaScript en afbeeldingen lopen via url_for('static', filename=...), en links tussen pagina's via url_for('index') of url_for('post', post_id=1). Zo blijven alle verwijzingen kloppen, ook als je de structuur later aanpast."
+    ]
+  }
+]
