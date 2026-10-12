@@ -56,6 +56,46 @@ docker exec -it mongodb mongosh
 | Container verwijderen (data blijft in het volume) | `docker rm mongodb` |
 | Volume verwijderen (**data weg**) | `docker volume rm mongo_data` |
 
+## Dockerfile: niet nodig
+
+Er is bewust geen Dockerfile. Een Dockerfile gebruik je om zelf een image te **bouwen**. Hier gebruiken we een kant-en-klare image (`mongo:latest`) van Docker Hub, dus er valt niets te bouwen.
+
+Wel te bekijken:
+
+| Wat | Commando |
+|---|---|
+| Details van de image | `docker image inspect mongo:latest` |
+| Opbouw van de image per laag | `docker history mongo:latest` |
+| Instellingen van de draaiende container | `docker inspect mongodb` |
+
+Een Dockerfile is pas nodig als je de Flask-app zelf in een container wilt draaien.
+
+## Alternatief: docker-compose.yml
+
+In plaats van het lange `docker run`-commando kun je de configuratie in een bestand `docker-compose.yml` vastleggen. Dit bestand bestaat nu nog niet in het project.
+
+```yaml
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+```
+
+| Actie | Commando |
+|---|---|
+| Starten | `docker compose up -d` |
+| Stoppen en container verwijderen (data blijft) | `docker compose down` |
+| Stoppen en ook het volume verwijderen (**data weg**) | `docker compose down -v` |
+
+Let op: de container `mongodb` draait nu al via `docker run`. Verwijder die eerst (`docker stop mongodb && docker rm mongodb`) voordat je `docker compose up` gebruikt, anders botst de containernaam en de poort. Het volume `mongo_data` blijft bestaan, maar Compose geeft volumes standaard een voorvoegsel met de projectnaam (bijv. `flask_mongo_data`). Wil je het bestaande volume hergebruiken, voeg dan onder `volumes:` `external: true` toe bij `mongo_data`.
+
 ## Opmerkingen
 
 - Als poort 27017 al in gebruik is, kies dan een andere hostpoort, bijv. `-p 27018:27017`, en verbind dan met `mongodb://localhost:27018`.
