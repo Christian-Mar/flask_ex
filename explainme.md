@@ -98,7 +98,38 @@ Let op: de container `mongodb` draait nu al via `docker run`. Verwijder die eers
 
 ## Blog-applicatie (Flask)
 
-De app staat in `src/blog/app.py`. Voorlopig geeft de route `/` alleen "hello world" terug. De app wordt gemaakt door de functie `create_app()`. `src/blog/__init__.py` is bewust leeg.
+De app staat in `src/blog/app.py`. De app wordt gemaakt door de functie `create_app()`. `src/blog/__init__.py` is bewust leeg.
+
+### Routes
+
+| Route | Template | Uitleg |
+|---|---|---|
+| `/` | `index.html` | Homepagina met een overzicht van artikelen. |
+| `/post/<int:post_id>` | `post.html` | Eén artikel. `post_id` wordt nog nergens voor gebruikt. |
+
+De pagina's tonen nog de dummytekst van de Start Bootstrap-templates.
+
+### Mappenstructuur
+
+```
+src/blog/
+  app.py
+  templates/
+    base.html       gedeelde kop, navigatie en voettekst
+    _sidebar.html   zijbalk, gebruikt door index.html en post.html
+    index.html      homepagina (afkomstig uit startbootstrap-blog-home)
+    post.html       artikelpagina (afkomstig uit startbootstrap-blog-post)
+  static/
+    css/styles.css
+    js/scripts.js
+    assets/favicon.ico
+```
+
+- Flask zoekt HTML-sjablonen standaard in `templates` (met een **s**) en statische bestanden in `static`, naast `app.py`. Met `template` (zonder s) werkt het niet.
+- `base.html` bevat de gedeelde opzet met blokken (`title`, `header`, `content`). `index.html` en `post.html` beginnen met `{% extends "base.html" %}` en vullen alleen de blokken in. Een wijziging in de navigatie of voettekst hoef je zo maar op één plek te doen.
+- `_sidebar.html` wordt in beide pagina's ingevoegd met `{% include "_sidebar.html" %}`. De underscore geeft aan dat het een onderdeel is en geen losse pagina.
+- Verwijzingen naar statische bestanden gaan via `url_for('static', filename='css/styles.css')` en niet via een relatief pad als `css/styles.css`. Links tussen pagina's gaan via `url_for('index')` en `url_for('post', post_id=1)`.
+- De twee originele templates hadden elk een eigen `styles.css`, `scripts.js` en `favicon.ico`. Die verschilden alleen in de commentaarregel bovenin, dus er is één exemplaar bewaard.
 
 ### Starten
 
